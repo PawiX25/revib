@@ -1,0 +1,7 @@
+* text=auto eol=lf
+
+bin/cc1plus binary
+bin/cpp binary
+bin/g++ binary
+*.gif binary
+*.png binary

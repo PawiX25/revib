@@ -1,0 +1,15 @@
+# the game's executables (yours)
+iso/
+
+# made by splat (make *-extract)
+asm/
+assets/
+*.ld
+*auto.*.txt
+
+# made by the build and the tools
+build/
+expected/
+/nonmatchings/
+__pycache__/
+.venv/

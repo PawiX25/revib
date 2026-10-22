@@ -1,0 +1,5 @@
+#!/bin/bash
+# Assembler driver: maspsx (emulating PSY-Q ASPSX 2.7x) in front of GNU as.
+DIR=$(dirname -- "$0")
+python3 "$DIR/../tools/maspsx/maspsx.py" --run-assembler --gnu-as-path mips-linux-gnu-as \
+    --expand-div --macro-inc --aspsx-version=2.79 "$@"

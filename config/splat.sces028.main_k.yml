@@ -1,0 +1,107 @@
+name: vib-ribbon kiosk (Europe)
+options:
+  basename:    main_k
+  base_path:   ..
+  target_path: iso/MAIN_K.EXE
+  asm_path:    asm/main_k/
+  asset_path:  assets/main_k/
+  src_path:    src/game/
+  build_path:  build/main_k
+  platform:    psx
+  compiler:    GCC
+  symbol_addrs_path:           config/symbols.sces028.main_k.txt
+  undefined_funcs_auto_path:   config/undefined_funcs_auto.sces028.main_k.txt
+  undefined_syms_auto_path:    config/undefined_syms_auto.sces028.main_k.txt
+  find_file_boundaries:        yes
+  use_legacy_include_asm:      no
+  migrate_rodata_to_functions: yes
+  disasm_unknown:              yes
+  include_macro_inc:           no
+  rodata_string_guesser_level: 2
+  gp_value: 0x80045418
+  ld_legacy_generation: yes
+  check_consecutive_segment_types: no
+  ld_bss_is_noload: no
+  section_order:
+    - .rodata
+    - .text
+    - .data
+    - .bss
+segments:
+  - [0x0, header]
+  - name:  main_k
+    type:  code
+    start: 0x00000800
+    vram:  0x80019000
+    align: 4
+    subalign: 4
+    subsegments:
+      - [0x800, .rodata, VideoSys]
+      - [0x87C, .rodata, CdSys]
+      - [0x914, .rodata, AudioSys]
+      - [0x99C, rodata]
+      - [0x9E8, .rodata, InputSys]
+      - [0xA44, .rodata, MemorySys]
+      - [0xC00, .rodata, FileSys]
+      - [0xCB8, .rodata, PackedFiles]
+      - [0xD08, .rodata, KioskMain]
+      - [0xE08, rodata]
+      - [0xE64, .rodata, InputControl]
+      - [0xED4, .rodata, TmdLineObj]
+      - [0xF50, .rodata, unk_25B68]
+      - [0x1730, .rodata, unk_28A88]
+      - [0x178C, .rodata, Message]
+      - [0x1830, .rodata, FontHack]
+      - [0x18C8, rodata]
+      - [0x4B64, cpp, VideoSys]
+      - [0x5DF4, cpp, CdSys]
+      - [0x6870, cpp, AudioSys]
+      - [0x7904, cpp, InputSys]
+      - [0x8F54, cpp, MemorySys]
+      - [0x9318, cpp, FileSys]
+      - [0xA740, cpp, unk_22EE8]
+      - [0xAA68, cpp, PackedFiles]
+      - [0xAC18, cpp, KioskMain]
+      - [0xB058, cpp, InputControl]
+      - [0xBF80, cpp, TmdLineObj]
+      - [0xCAC8, cpp, unk_25590]
+      - [0xD0A0, cpp, CameraMovie]
+      - [0xD3F4, cpp, unk_25B68]
+      - [0x103CC, cpp, unk_28A88]
+      - [0x105CC, cpp, Message]
+      - [0x10A14, cpp, FontHack]
+      - [0x10C0C, cpp, unk_2B054]
+      - [0x10CB4, asm]
+      - [0x246B4, data]
+      - [0x246EC, .data, VideoSys]
+      - [0x24708, .data, CdSys]
+      - [0x24A30, .data, AudioSys]
+      - [0x24B48, .data, InputSys]
+      - [0x24BD8, .data, FileSys]
+      - [0x24C20, .data, unk_22EE8]
+      - [0x24F84, .data, unk_25B68]
+      - [0x255C8, .data, unk_28A88]
+      - [0x255D4, data]
+      - [0x2CC18, .sdata, VideoSys]
+      - [0x2CC7C, .sdata, CdSys]
+      - [0x2CCD8, .sdata, AudioSys]
+      - [0x2CCF4, .sdata, InputSys]
+      - [0x2CD08, .sdata, MemorySys]
+      - [0x2CD34, .sdata, FileSys]
+      - [0x2CD68, .sdata, KioskMain]
+      - [0x2CD8C, .sdata, InputControl]
+      - [0x2CDA4, .sdata, TmdLineObj]
+      - [0x2CDB0, .sdata, unk_25B68]
+      - [0x2CDEC, .sdata, unk_28A88]
+      - [0x2CE0C, .sdata, Message]
+      - [0x2CE10, .sdata, FontHack]
+      - [0x2CE18, .sdata, unk_2B054]
+      - [0x2CE1C, data]
+      - [0x2CE24, .sbss, CdSys]
+      - [0x2CE38, data]
+      - [0x2CE3C, .sbss, FileSys]
+      - [0x2CE44, data]
+      - [0x2CE64, .bss, VideoSys]
+      - [0x2CEA0, .bss, CameraMovie]
+      - [0x2CEC0, data]
+  - [0x2D000]

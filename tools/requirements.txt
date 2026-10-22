@@ -1,0 +1,12 @@
+# splat
+-r splat/requirements.txt
+# asm-differ
+colorama
+cxxfilt
+Levenshtein
+watchdog
+# m2c, decomp-permuter
+pycparser
+toml
+# tools/mod/examples
+Pillow

@@ -1,0 +1,11 @@
+/* PSY-Q linker section sizes (MemorySys::Info) */
+__textlen = 0x1FB54;
+__rdatalen = 0x4363;
+__datalen = 0x852C;
+__sdatalen = 0x208;
+__bsslen = 0x8D7C;
+__sbsslen = 0x44;
+__ctorslen = 0x24;
+__dtorslen = 0x10;
+/* address of the built-in archive, doubled (FileSys::LoadFile) */
+__builtin_archive_x2 = 0x34190;

@@ -1,0 +1,64 @@
+// splat's symbols for SCES_028.73, the loader, with the conventions of
+// symbols.sces028.txt (MAIN_T).
+
+PadChkVsync = 0x80011930;
+PadStartCom = 0x80011950;
+PadStopCom = 0x80011970;
+__main = 0x80011FEC;
+CdSearchFile = 0x80012044;
+_cmp = 0x8001231C;
+Exec = 0x800129B4;
+printf = 0x800129C4;
+exit = 0x800129D4;
+CdIntToPos = 0x800129E4;
+CdPosToInt = 0x80012AE8;
+FlushCache = 0x80012B74;
+VSync = 0x80012B84;
+EnterCriticalSection = 0x80012D94;
+setjmp = 0x80012DA4;
+HookEntryInt = 0x80012DB4;
+startIntrVSync = 0x80012DC4;
+setIntrVSync = 0x80012E88;
+startIntrDMA = 0x80012EE4;
+ExitCriticalSection = 0x800131A4;
+ReturnFromException = 0x800131B4;
+ChangeClearPAD = 0x800131C4;
+ChangeClearRCnt = 0x800131D4;
+ResetEntryInt = 0x800131E4;
+CD_sync = 0x80013778;
+CD_ready = 0x800139F8;
+CD_flush = 0x800140CC;
+CD_initvol = 0x800141A0;
+CD_init = 0x80014290;
+CD_getsector = 0x800145D8;
+CD_getsector2 = 0x800146D8;
+DeliverEvent = 0x800148B0;
+InitHeap = 0x800148C0;
+__sn_cpp_structors = 0x800148D0;
+strncmp = 0x8001492C;
+memcpy = 0x8001493C;
+strcmp = 0x8001494C;
+ResetCallback = 0x80010AF0;
+InterruptCallback = 0x80010B20;
+DMACallback = 0x80010B50;
+StopCallback = 0x80010B80;
+CdRead = 0x80011664;
+CdReadSync = 0x80011800;
+CdStatus = 0x80011904;
+CdMode = 0x80011914;
+CdLastPos = 0x80011924;
+CdControl = 0x80011998;
+CdControlF = 0x80011AD4;
+CdControlB = 0x80011C08;
+CdInit = 0x80011DDC;
+D_80010000 = 0x80010000; // size:0x4C
+D_8001004C = 0x8001004C;
+_ramsize = 0x800167CC;
+_stacksize = 0x800167D0;
+main = 0x80010A24;
+g_loaderData = 0x80014960; // size:0xA8
+_GLOBAL_.I._ramsize = 0x80010ABC;
+// the start of .text, in the startup code's section table; its value for the
+// linker is in undefined_syms.sces028.loader.txt (loader.cpp's first function
+// is static, so no object defines a global name there)
+__text = 0x800106BC;

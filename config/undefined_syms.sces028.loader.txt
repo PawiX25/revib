@@ -1,0 +1,2 @@
+/* the start of .text in the startup code's section table (the loader's first function is static) */
+__text = 0x800106BC;

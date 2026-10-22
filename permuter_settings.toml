@@ -1,0 +1,6 @@
+# decomp-permuter's import.py: it takes the compiler command from
+# `make --dry-run` (./bin/g++). The permuter itself parses C only.
+compiler_type = "gcc"
+
+[decompme.compilers]
+"./bin/g++" = "gcc2.91.66-psx"

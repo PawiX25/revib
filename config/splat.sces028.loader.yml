@@ -1,0 +1,51 @@
+name: vib-ribbon loader (Europe)
+options:
+  basename:    loader
+  base_path:   ..
+  target_path: iso/SCES_028.73
+  asm_path:    asm/loader/
+  asset_path:  assets/loader/
+  src_path:    src/game/
+  build_path:  build/loader
+  platform:    psx
+  compiler:    GCC
+  symbol_addrs_path:           config/symbols.sces028.loader.txt
+  undefined_funcs_auto_path:   config/undefined_funcs_auto.sces028.loader.txt
+  undefined_syms_auto_path:    config/undefined_syms_auto.sces028.loader.txt
+  find_file_boundaries:        yes
+  use_legacy_include_asm:      no
+  migrate_rodata_to_functions: yes
+  disasm_unknown:              yes
+  include_macro_inc:           no
+  rodata_string_guesser_level: 2
+  gp_value: 0x800167CC
+  ld_legacy_generation: yes
+  check_consecutive_segment_types: no
+  ld_bss_is_noload: yes
+  section_order:
+    - .rodata
+    - .text
+    - .data
+    - .bss
+segments:
+  - [0x0, header]
+  - name:  loader
+    type:  code
+    start: 0x00000800
+    vram:  0x80010000
+    bss_size: 0x243C
+    align: 4
+    subalign: 4
+    subsegments:
+      - [0x800, .rodata, loader]
+      - [0x93C, rodata]
+      - [0xEBC, cpp, loader]
+      - [0x12F0, asm]
+      - [0x5158, data]      # the static constructor table
+      - [0x5160, .data, loader]
+      - [0x5A28, data]
+      - [0x6FCC, .sdata, loader]
+      # .sbss and .bss (NOLOAD; the file is padded to 2048 bytes)
+      - { start: 0x6FE0, type: .sbss, vram: 0x800167E0, name: loader }
+      - { start: 0x6FE0, type: bss, vram: 0x800167E4, name: bss_800167E4 }
+  - [0x7000]

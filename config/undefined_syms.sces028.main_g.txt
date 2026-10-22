@@ -1,0 +1,22 @@
+/* PSY-Q linker section sizes (MemorySys::Info) */
+__textlen = 0x49FC0;
+__rdatalen = 0x89E3;
+__datalen = 0xA3FC;
+__sdatalen = 0x948;
+__bsslen = 0x9104;
+__sbsslen = 0xB8;
+__ctorslen = 0x54;
+__dtorslen = 0x30;
+/* address of the built-in archive, doubled (FileSys::LoadFile) */
+__builtin_archive_x2 = 0x3C810;
+/* where .text and .sbss start (the start-up code and its section table read them) */
+__text = 0x800219E4;
+__sbss = 0x8007676C;
+/* Gameplay: the course table (a file-static constant; Glue declares it) and the
+   template instances of the file that the asm of Update() calls */
+g_courses = 0x8001D83C;
+func_80046FD0 = 0x80046FD0;
+func_8004702C = 0x8004702C;
+func_8004BDA4 = 0x8004BDA4;
+/* Gameplay: AddEvent()'s string, which its C++ (compiled for its strings and template instances) puts out */
+D_8001D78C = 0x8001D78C;

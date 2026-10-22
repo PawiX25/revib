@@ -1,0 +1,206 @@
+name: vib-ribbon gameplay (Europe)
+options:
+  basename:    main_g
+  base_path:   ..
+  target_path: iso/MAIN_G.EXE
+  asm_path:    asm/main_g/
+  asset_path:  assets/main_g/
+  src_path:    src/game/
+  build_path:  build/main_g
+  platform:    psx
+  compiler:    GCC
+  symbol_addrs_path:           config/symbols.sces028.main_g.txt
+  undefined_funcs_auto_path:   config/undefined_funcs_auto.sces028.main_g.txt
+  undefined_syms_auto_path:    config/undefined_syms_auto.sces028.main_g.txt
+  find_file_boundaries:        yes
+  use_legacy_include_asm:      no
+  migrate_rodata_to_functions: yes
+  disasm_unknown:              yes
+  include_macro_inc:           no
+  rodata_string_guesser_level: 2
+  gp_value: 0x80075E24
+  ld_legacy_generation: yes
+  check_consecutive_segment_types: no
+  ld_bss_is_noload: yes
+  section_order:
+    - .rodata
+    - .text
+    - .data
+    - .bss
+segments:
+  - [0x0, header]
+  - name:  main_g
+    type:  code
+    start: 0x00000800
+    vram:  0x80019000
+    bss_size: 0x91BC
+    align: 4
+    subalign: 4
+    subsegments:
+      - [0x800, .rodata, FbStream]
+      - [0x8C0, .rodata, VideoSys]
+      - [0x93C, .rodata, CdSys]
+      - [0x9D4, .rodata, AudioSys]
+      - [0xA5C, .rodata, Thread]
+      - [0xAC4, rodata]
+      - [0xB10, .rodata, InputSys]
+      - [0xB6C, .rodata, MemorySys]
+      - [0xD28, .rodata, FileSys]
+      - [0xDE0, .rodata, Format]
+      - [0xE00, .rodata, GameMain]
+      - [0xEDC, .rodata, AudioStream]
+      - [0xF7C, .rodata, SignalModule]
+      - [0x106C, .rodata, SignalAnalyzer]
+      - [0x10EC, .rodata, SignalSys]
+      - [0x1160, rodata]
+      - [0x11AC, .rodata, InputControl]
+      - [0x121C, .rodata, Parameter]
+      - [0x139C, .rodata, Game]
+      - [0x13AC, .rodata, Receiver]
+      - [0x144C, .rodata, FastAllocator]
+      - [0x155C, .rodata, Forms]
+      - [0x1EBC, .rodata, unk_28A88]
+      - [0x1F18, .rodata, NumberVoice]
+      - [0x2084, .rodata, TitleDraw]
+      - [0x49A0, .rodata, Font]
+      - [0x4A0C, .rodata, Title]
+      - [0x4BE0, .rodata, AnalysisScript]
+      - [0x4DC0, .rodata, Gameplay]
+      - [0x51FC, .rodata, SceneDraw]
+      - [0x5458, .rodata, Meters]
+      - [0x5518, .rodata, RoadSelect]
+      - [0x55D0, .rodata, Glue]
+      - [0x57C0, .rodata, TmdLineObj]
+      - [0x583C, .rodata, ScoreMeter]
+      - [0x58B8, rodata]
+      - [0x58C8, .rodata, PackedFiles]
+      - [0x5918, .rodata, GameCamera]
+      - [0x5ACC, .rodata, Message]
+      - [0x5B70, .rodata, FontHack]
+      - [0x5C08, rodata]
+      - [0x91E4, cpp, FbStream]
+      - [0x9930, cpp, VideoSys]
+      - [0xABCC, cpp, CdSys]
+      - [0xB9BC, cpp, AudioSys]
+      - [0xC994, cpp, Thread]
+      - [0xCD50, cpp, InputSys]
+      - [0xE480, cpp, MemorySys]
+      - [0xE844, cpp, FileSys]
+      - [0xFC6C, cpp, unk_22EE8]
+      - [0xFF94, cpp, Format]
+      - [0x10310, cpp, GameMain]
+      - [0x10D2C, cpp, AudioStream]
+      - [0x117E4, cpp, SignalModule]
+      - [0x125E4, cpp, SignalAnalyzer]
+      - [0x127CC, cpp, SignalSys]
+      - [0x12E2C, cpp, InputControl]
+      - [0x13D54, cpp, Parameter]
+      - [0x17394, cpp, Game]
+      - [0x1757C, cpp, Receiver]
+      - [0x17848, cpp, FastAllocator]
+      - [0x17C2C, cpp, Forms]
+      - [0x1CF68, cpp, unk_28A88]
+      - [0x1DAEC, cpp, NumberVoice]
+      - [0x1EB0C, cpp, TitleDraw]
+      - [0x269FC, cpp, Font]
+      - [0x27094, cpp, Title]
+      - [0x27B10, cpp, AnalysisScript]
+      - [0x2B72C, cpp, Gameplay]
+      - [0x33674, cpp, Score]
+      - [0x338FC, cpp, SceneDraw]
+      - [0x353C8, cpp, Meters]
+      - [0x35EB0, cpp, RoadSelect]
+      - [0x3648C, cpp, Glue]
+      - [0x37D38, cpp, TmdLineObj]
+      - [0x38A08, cpp, unk_25590]
+      - [0x38FE0, cpp, CameraMovie]
+      - [0x39334, cpp, ScoreMeter]
+      - [0x39A80, cpp, RandomPicks]
+      - [0x39CF4, cpp, PackedFiles]
+      - [0x39EA4, cpp, GameCamera]
+      - [0x3AF88, cpp, Message]
+      - [0x3B3D0, cpp, FontHack]
+      - [0x3B5C8, cpp, SoundSequence]
+      - [0x3B7B4, cpp, unk_2B054]
+      - [0x3B85C, asm]
+      - [0x531A4, data]
+      - [0x53228, .data, VideoSys]
+      - [0x53244, .data, CdSys]
+      - [0x5356C, .data, AudioSys]
+      - [0x53684, .data, Thread]
+      - [0x53694, .data, InputSys]
+      - [0x53724, .data, FileSys]
+      - [0x5376C, .data, unk_22EE8]
+      - [0x53AD0, .data, AudioStream]
+      - [0x540DC, .data, SignalSys]
+      - [0x540EC, .data, FastAllocator]
+      - [0x54104, .data, unk_28A88]
+      - [0x54110, .data, TitleDraw]
+      - [0x54AC4, .data, Font]
+      - [0x54C50, .data, Title]
+      - [0x54CD4, .data, AnalysisScript]
+      - [0x54FF4, .data, Gameplay]
+      - [0x55124, .data, SceneDraw]
+      - [0x55544, .data, Glue]
+      - [0x55648, .data, ScoreMeter]
+      - [0x55824, .data, GameCamera]
+      - [0x55930, data]
+      - [0x5D624, .sdata, FbStream]
+      - [0x5D638, .sdata, VideoSys]
+      - [0x5D69C, .sdata, CdSys]
+      - [0x5D6F8, .sdata, AudioSys]
+      - [0x5D70C, .sdata, Thread]
+      - [0x5D71C, .sdata, InputSys]
+      - [0x5D730, .sdata, MemorySys]
+      - [0x5D75C, .sdata, FileSys]
+      - [0x5D790, .sdata, Format]
+      - [0x5D7BC, .sdata, GameMain]
+      - [0x5D7E8, .sdata, AudioStream]
+      - [0x5D818, .sdata, SignalModule]
+      - [0x5D824, .sdata, SignalAnalyzer]
+      - [0x5D830, .sdata, SignalSys]
+      - [0x5D858, .sdata, InputControl]
+      - [0x5D870, .sdata, Parameter]
+      - [0x5D890, .sdata, Game]
+      - [0x5D8A0, .sdata, Receiver]
+      - [0x5D8A8, .sdata, Forms]
+      - [0x5D8D4, .sdata, unk_28A88]
+      - [0x5D8F4, .sdata, NumberVoice]
+      - [0x5D90C, .sdata, TitleDraw]
+      - [0x5DAF0, .sdata, Font]
+      - [0x5DB1C, .sdata, Title]
+      - [0x5DBE8, .sdata, AnalysisScript]
+      - [0x5DC90, .sdata, Gameplay]
+      - [0x5DD4C, data]
+      - [0x5DD54, .sdata, SceneDraw]
+      - [0x5DDDC, .sdata, Meters]
+      - [0x5DDE8, .sdata, RoadSelect]
+      - [0x5DDF0, .sdata, Glue]
+      - [0x5DE78, .sdata, TmdLineObj]
+      - [0x5DE7C, .sdata, ScoreMeter]
+      - [0x5DE8C, .sdata, RandomPicks]
+      - [0x5DE98, data]
+      - [0x5DEAC, .sdata, GameCamera]
+      - [0x5DF58, .sdata, Message]
+      - [0x5DF5C, .sdata, FontHack]
+      - [0x5DF64, .sdata, unk_2B054]
+      - [0x5DF68, data]
+      # .sbss and .bss (NOLOAD; the file is padded to 2048 bytes past .sdata)
+      - { start: 0x5DF6C, type: .sbss, vram: 0x8007676C, name: FbStream }
+      - { start: 0x5DF74, type: bss, vram: 0x80076774, name: bss_80076774 }
+      - { start: 0x5DF78, type: .sbss, vram: 0x80076778, name: CdSys }
+      - { start: 0x5DF8C, type: bss, vram: 0x8007678C, name: bss_8007678C }
+      - { start: 0x5DF90, type: .sbss, vram: 0x80076790, name: FileSys }
+      - { start: 0x5DF98, type: bss, vram: 0x80076798, name: bss_80076798 }
+      - { start: 0x5DFC8, type: .sbss, vram: 0x800767C8, name: TitleDraw }
+      - { start: 0x5DFE0, type: bss, vram: 0x800767E0, name: bss_800767E0 }
+      - { start: 0x5DFF0, type: .sbss, vram: 0x800767F0, name: Gameplay }
+      - { start: 0x5DFF8, type: bss, vram: 0x800767F8, name: bss_800767F8 }
+      - { start: 0x5E000, type: .bss, vram: 0x80076824, name: VideoSys }
+      - { start: 0x5E000, type: .bss, vram: 0x80076860, name: NumberVoice }
+      - { start: 0x5E000, type: .bss, vram: 0x80076AE0, name: TitleDraw }
+      - { start: 0x5E000, type: .bss, vram: 0x80076B5C, name: SceneDraw }
+      - { start: 0x5E000, type: .bss, vram: 0x80076BCC, name: CameraMovie }
+      - { start: 0x5E000, type: .bss, vram: 0x80076BEC, name: GameCamera }
+      - { start: 0x5E000, type: bss, vram: 0x80076C08, name: bss_80076C08 }
+  - [0x5E000]
