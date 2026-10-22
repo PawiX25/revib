@@ -143,6 +143,10 @@ public:
     /* the player's controller if the name is one of theirs, else one with no buttons; the name joins Names() */
     static Pad* GetPad(string name);
     static bool IsPlayerName(string name);
+#ifdef DEBUG_MENU
+    /* (not in the game) the name of a player's controller */
+    static const string& PlayerName(int player) { return s_playerNames[player]; }
+#endif
 
 private:
     static string s_playerNames[2];

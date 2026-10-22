@@ -34,8 +34,9 @@ behaved like GCC 2.95 (see [bin/README.md](bin/README.md)).
 ## The debug menus
 
 The game still has its developers' debug menus, and nothing in it opens
-them. The `debug-menu` branch adds a way in (select on the first
-controller) and describes the menus in its `docs/debug_menus.md`.
+them. This branch adds a way in: `make game DEBUG_MENU=1` builds a
+`MAIN_G.EXE` in which select on the first controller opens them (not the
+original game). See [docs/debug_menus.md](docs/debug_menus.md).
 
 ## Building
 

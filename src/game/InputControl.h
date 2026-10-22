@@ -9,7 +9,8 @@
  * Picks which controller (by the names InputSys knows) the first player
  * uses: up and down go through the names, select takes the one shown.
  * Nothing switches it to STATE_CHOOSING, so all it does is name the first
- * player's controller and update InputSys every frame.
+ * player's controller and update InputSys every frame; built with
+ * DEBUG_MENU (not the game), select does.
  */
 class InputControl {
 public:

@@ -138,6 +138,19 @@ $(GAMEPLAY_BUILD)/%.s.o: %.s
 	@mkdir -p $(dir $@)
 	$(AS) -o $@ $<
 
+# `make game DEBUG_MENU=1`: select on the first controller opens the game's
+# hidden menu of controller names, and with it the debug menus (see
+# docs/debug_menus.md). Not the original game: `make game-check DEBUG_MENU=1`
+# fails.
+DEBUG_MENU      ?= 0
+$(GAMEPLAY_BUILD)/src/game/InputControl.cpp.o: CXX_FLAGS += $(if $(filter 1,$(DEBUG_MENU)),-DDEBUG_MENU)
+$(GAMEPLAY_BUILD)/src/game/InputControl.cpp.o: $(GAMEPLAY_BUILD)/debug_menu.$(DEBUG_MENU)
+# InputControl.cpp is built again when DEBUG_MENU changes
+$(GAMEPLAY_BUILD)/debug_menu.%:
+	@mkdir -p $(dir $@)
+	@rm -f $(GAMEPLAY_BUILD)/debug_menu.*
+	@touch $@
+
 # the game's SoundDelay::Push() computes its store address anew each time round its loop
 $(GAMEPLAY_BUILD)/src/game/AudioStream.cpp.o: CXX_FLAGS += -fno-strength-reduce
 $(GAMEPLAY_BUILD)/%.cpp.o: %.cpp $(MASPSX_APP)
