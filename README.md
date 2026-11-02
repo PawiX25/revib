@@ -37,6 +37,13 @@ The game still has its developers' debug menus, and nothing in it opens
 them. The `debug-menu` branch adds a way in (select on the first
 controller) and describes the menus in its `docs/debug_menus.md`.
 
+## In the browser
+
+The `port` branch builds this source with Emscripten, with a runtime
+standing in for the PlayStation, and plays it in a web page from your own
+disc image: **https://pawix25.github.io/revib/** (see the branch's
+[port/README.md](https://github.com/PawiX25/revib/blob/port/port/README.md)).
+
 ## Building
 
 You need your own copy of the game: this repository has none of its files.
