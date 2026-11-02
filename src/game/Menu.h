@@ -105,6 +105,17 @@ struct MenuCursor {
 /* 1: confirm was pressed, 2: cancel, 0: neither */
 int ReadConfirm();
 
+#ifdef PORT
+/*
+ * The port's mouse and keyboard menus: the menu being read and its cursor,
+ * told to the page each frame (port/runtime/sys.cpp). port_menu_screen is
+ * the menu: Title::Screen in the game, 100 + LanguageSelect's menu in the
+ * title.
+ */
+extern "C" int port_menu_screen;
+extern "C" void port_menu_report(int rows, int columns, int x, int y, int active, int wrap);
+#endif
+
 /* how much of `perSecond` the given frames make */
 int PerFrames(int perSecond, int frames);
 

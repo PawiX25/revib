@@ -1,7 +1,8 @@
 #ifndef INCLUDE_ASM_H
 #define INCLUDE_ASM_H
 
-#ifndef PERMUTER
+/* (decomp-permuter's builds and the port have no asm) */
+#if !defined(PERMUTER) && !defined(PORT)
 
 #ifndef INCLUDE_ASM
 

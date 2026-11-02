@@ -202,9 +202,11 @@ int main(int argc, char** argv)
  * small data, so _S_oom_malloc() (compiled at the end of the file) loads it
  * with lui/lw, as the game does.
  */
+#ifndef PORT
 __asm__(".pushsection .sdata\n"
         "\t.align\t2\n"
         "\t.globl\t_t23__malloc_alloc_template1i0.__malloc_alloc_oom_handler\n"
         "_t23__malloc_alloc_template1i0.__malloc_alloc_oom_handler:\n"
         "\t.word\t0\n"
         ".popsection");
+#endif

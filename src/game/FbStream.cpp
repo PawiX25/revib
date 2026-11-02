@@ -8,6 +8,10 @@
 
 #include "FbStream.h"
 
+#ifdef PORT
+extern "C" void sys_idle(void);
+#endif
+
 /* libspu's start of each reverb type's work area (in 8-byte units) */
 extern "C" long _spu_rev_startaddr[];
 
@@ -25,7 +29,13 @@ static void Warn(const char* message)
 }
 
 static long* s_offStartAddr = &_spu_rev_startaddr[SPU_REV_MODE_OFF];
+#ifdef PORT
+/* (the port's SpuSetTransferStartAddr() takes any address: nothing to patch) */
+static u_long s_rangeCheckWord = RANGE_CHECK;
+static u_long* s_rangeCheck = &s_rangeCheckWord;
+#else
 static u_long* s_rangeCheck = (u_long*)SpuSetTransferStartAddr + 6;
+#endif
 static CSpuFeedbackStream* s_instance = NULL;
 
 /* the instruction read back after each change to it (as in the original; nothing uses it) */
@@ -59,7 +69,11 @@ CSpuFeedbackStream::CSpuFeedbackStream()
         *s_rangeCheck = 0; /* nop */
         s_patched = *s_rangeCheck;
     }
+#ifdef PORT
+    s_setTransferStartAddr = (u_long (*)(u_long))SpuSetTransferStartAddr;
+#else
     s_setTransferStartAddr = (u_long (*)(u_long))((u_long)SpuSetTransferStartAddr | 0xA0000000);
+#endif
 #line 121 "C:/psj/dev/locale/game/FbStream.cpp"
     assert(s_setTransferStartAddr(0x100) == 0x100);
 #line 66 "src/game/FbStream.cpp"
@@ -104,6 +118,9 @@ void CSpuFeedbackStream::SetReverbTypeAt(u_long irqAddr, long type)
     SpuSetIRQAddr(irqAddr);
     SpuSetIRQ(SPU_ON);
     while (!m_typeSet) {
+#ifdef PORT
+        sys_idle(); /* (the SPU runs on until its interrupt) */
+#endif
     }
     SpuSetIRQCallback(callback);
 }

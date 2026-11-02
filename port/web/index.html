@@ -1,0 +1,323 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>vib-ribbon</title>
+<meta name="description" content="The PlayStation game Vib-Ribbon, rebuilt from its decompiled source code, played in the browser from your own disc.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  /*
+   * The game's own look: white lines on black, nothing else. The one bold
+   * thing is the game's own title, turning as on its title screen.
+   */
+  :root {
+    color-scheme: dark;
+    --ink: #000;          /* the game's black */
+    --ribbon: #fff;       /* its lines */
+    --chalk: #cfcfcf;     /* reading text */
+    --ash: #7a7a7a;       /* what is not chosen, notes */
+    --soot: #2b2b2b;      /* hairlines */
+    --font: 'Quicksand', ui-rounded, 'Segoe UI', system-ui, sans-serif;
+    --wave: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='6' viewBox='0 0 16 6'%3E%3Cpath d='M0 3 Q4 0 8 3 T16 3' fill='none' stroke='%23fff' stroke-width='1.4'/%3E%3C/svg%3E");
+  }
+  * { box-sizing: border-box; }
+  html, body { height: 100%; }
+  body {
+    margin: 0; background: var(--ink); color: var(--chalk);
+    font: 400 16px/1.6 var(--font); overflow-x: hidden;
+    -webkit-font-smoothing: antialiased;
+  }
+  button, input, label { font: inherit; color: inherit; }
+  :focus-visible { outline: 2px solid var(--ribbon); outline-offset: 3px; }
+  [hidden] { display: none !important; }
+
+  /* --- the top: settings, full screen --- */
+  .top {
+    position: relative; z-index: 3;
+    display: flex; align-items: center; justify-content: flex-end;
+    padding: 14px clamp(16px, 3vw, 32px);
+  }
+  .tools { display: flex; gap: 4px; }
+  .icon {
+    display: inline-grid; place-items: center; width: 40px; height: 40px; padding: 0;
+    background: none; border: 0; border-radius: 50%; cursor: pointer; color: var(--ash);
+  }
+  .icon:hover, .icon[aria-expanded="true"] { color: var(--ribbon); }
+  .icon svg { width: 22px; height: 22px; fill: none; stroke: currentColor; stroke-width: 1.4; stroke-linecap: round; stroke-linejoin: round; }
+
+  /* --- the stage: the screen --- */
+  .stage {
+    position: relative; display: grid; place-items: center;
+    min-height: calc(100vh - 68px); padding: 0 16px 32px;
+  }
+  .screen-wrap {
+    position: relative;
+    width: min(100%, calc((100vh - 120px) * 4 / 3));
+    aspect-ratio: 4 / 3;
+  }
+  /* the screen's corners, faintly, as a viewfinder's */
+  .screen-wrap::before {
+    content: ''; position: absolute; inset: -10px; pointer-events: none;
+    --c: var(--soot); --l: 22px;
+    background:
+      linear-gradient(var(--c), var(--c)) top left / var(--l) 1.5px, linear-gradient(var(--c), var(--c)) top left / 1.5px var(--l),
+      linear-gradient(var(--c), var(--c)) top right / var(--l) 1.5px, linear-gradient(var(--c), var(--c)) top right / 1.5px var(--l),
+      linear-gradient(var(--c), var(--c)) bottom left / var(--l) 1.5px, linear-gradient(var(--c), var(--c)) bottom left / 1.5px var(--l),
+      linear-gradient(var(--c), var(--c)) bottom right / var(--l) 1.5px, linear-gradient(var(--c), var(--c)) bottom right / 1.5px var(--l);
+    background-repeat: no-repeat;
+  }
+
+  /* a PAL television's 4:3, whatever the picture's pixels */
+  #screen-box { position: relative; z-index: 1; width: 100%; height: 100%; background: var(--ink); }
+  #screen { display: block; width: 100%; height: 100%; outline: none; }
+  #screen-box:fullscreen { display: grid; place-items: center; }
+  #screen-box:fullscreen #screen { width: min(100vw, 133.33vh); height: min(75vw, 100vh); }
+
+  /* --- boxes in the screen, drawn as the game draws its alerts --- */
+  .alert-layer {
+    position: absolute; inset: 0; z-index: 2;
+    display: grid; place-items: center; padding: 4%;
+  }
+  .alert-layer.dim { background: rgba(0, 0, 0, 0.74); }
+  .alert {
+    width: min(100%, 36em); max-height: 100%; overflow: auto;
+    border: 1.5px solid var(--ribbon); padding: clamp(18px, 4%, 32px);
+    background: var(--ink);
+  }
+  .alert h2 { margin: 0 0 10px; font-weight: 500; font-size: 22px; color: var(--ribbon); line-height: 1.25; }
+  .alert p { margin: 0 0 12px; }
+  .note { color: var(--ash); font-size: 14px; }
+  .actions { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; margin: 18px 0 8px; }
+  #setup { border: 0; background: transparent; text-align: center; }
+  #setup .wordmark-big { margin: 0 auto 22px; line-height: 0; }
+  /* the game's own title */
+  .game-logo { display: block; }
+  #setup .wordmark-big .game-logo { width: min(100%, 440px); height: auto; margin: 0 auto; }
+  /* (no title until there is one) */
+  .wordmark-big:has(canvas[hidden]) { display: none; }
+  #setup .lede { color: var(--chalk); margin: 0 auto 4px; max-width: 30em; }
+  #setup .actions { justify-content: center; }
+  #setup.dragging .btn-file { background: var(--ribbon); color: var(--ink); }
+
+  .btn {
+    display: inline-flex; align-items: center; justify-content: center; min-height: 42px;
+    padding: 8px 18px; border: 1.5px solid var(--ribbon); background: var(--ink); color: var(--ribbon);
+    font-weight: 500; cursor: pointer; border-radius: 0;
+  }
+  .btn:hover:not(:disabled), .btn:focus-visible { background: var(--ribbon); color: var(--ink); }
+  .btn:disabled { border-color: var(--soot); color: var(--ash); cursor: default; }
+  .btn input[type=file] { position: absolute; width: 1px; height: 1px; opacity: 0; pointer-events: none; }
+  .btn:focus-within { outline: 2px solid var(--ribbon); outline-offset: 3px; }
+  .link { background: none; border: 0; padding: 4px 2px; color: var(--ash); cursor: pointer; text-decoration: underline; text-underline-offset: 3px; }
+  .link:hover { color: var(--ribbon); }
+  .check { display: inline-flex; gap: 8px; align-items: center; color: var(--chalk); cursor: pointer; }
+  .check input { accent-color: #fff; width: 16px; height: 16px; }
+  .status { min-height: 1.6em; margin: 10px 0 0; color: var(--ash); }
+
+  /* --- the settings: a sheet over the right side --- */
+  .scrim { position: fixed; inset: 0; z-index: 4; background: rgba(0, 0, 0, 0.6); }
+  .sheet {
+    position: fixed; z-index: 5; top: 0; right: 0; bottom: 0; width: min(600px, 100vw);
+    background: var(--ink); border-left: 1.5px solid var(--ribbon);
+    overflow-y: auto; overscroll-behavior: contain;
+    transform: translateX(100%); visibility: hidden;
+    transition: transform .28s cubic-bezier(.3, 0, .2, 1), visibility 0s linear .28s;
+  }
+  .sheet.open { transform: none; visibility: visible; transition: transform .28s cubic-bezier(.3, 0, .2, 1); }
+  .sheet-head {
+    position: sticky; top: 0; z-index: 1; display: flex; align-items: center; justify-content: space-between;
+    padding: 14px 20px 14px 32px; background: var(--ink); border-bottom: 1px solid var(--soot);
+  }
+  .sheet-head h2 { margin: 0; font-weight: 500; font-size: 22px; color: var(--ribbon); }
+  .sheet-head .paused { color: var(--ash); font-size: 14px; margin-left: 12px; }
+  .sheet section { padding: 28px 32px 30px; border-bottom: 1px solid var(--soot); }
+  .sheet section:last-child { border-bottom: 0; padding-bottom: 64px; }
+  .sheet h3 { margin: 0 0 12px; font-weight: 500; font-size: 19px; color: var(--ribbon); line-height: 1.3; }
+  .sheet p { margin: 0 0 12px; max-width: 34em; }
+  .sheet .note { margin-top: 10px; }
+
+  /* a setting's two ways, as the game shows its menus: the chosen one in white */
+  .choice { display: flex; flex-wrap: wrap; gap: 6px 22px; margin: 0 0 14px; }
+  .choice button {
+    padding: 2px 0 8px; background: none; border: 0; cursor: pointer;
+    font-size: 21px; font-weight: 500; color: var(--ash);
+  }
+  .choice button:hover { color: var(--chalk); }
+  .choice button[aria-checked="true"] { color: var(--ribbon); background: var(--wave) left bottom / 16px 6px repeat-x; }
+
+  /* the examples */
+  .example { margin: 18px 0 4px; }
+  .example .status { margin: 0; }
+  .ab { display: grid; grid-template-columns: 40px 1fr; grid-template-rows: 64px auto; gap: 8px 12px; align-items: center; --ribbon: #fff; --ash: #6b6b6b; }
+  .ab-play { grid-row: 1; width: 40px; height: 40px; padding: 0; border: 1.5px solid var(--ribbon); border-radius: 50%; background: none; cursor: pointer; display: grid; place-items: center; }
+  .ab-play svg { width: 16px; height: 16px; }
+  .ab-play-icon { fill: none; stroke: var(--ribbon); stroke-width: 1.6; stroke-linejoin: round; }
+  .ab.is-playing .ab-play-icon { d: path("M6 4 L6 16 M14 4 L14 16"); }
+  .ab-wave { width: 100%; height: 64px; cursor: crosshair; touch-action: none; }
+  .ab-time { grid-column: 2; grid-row: 2; font-variant-numeric: tabular-nums; color: var(--ash); font-size: 14px; justify-self: start; }
+  .ab-whole { grid-column: 2; grid-row: 2; justify-self: end; background: none; border: 0; padding: 0; color: var(--ash); cursor: pointer; font-size: 14px; text-decoration: underline; text-underline-offset: 3px; }
+  .ab-whole:hover { color: var(--ribbon); }
+
+  .wipe { position: relative; overflow: hidden; aspect-ratio: 4 / 3; border: 1px solid var(--soot); cursor: ew-resize; touch-action: none; --split: 50%; user-select: none; }
+  .wipe canvas { position: absolute; inset: 0; width: 100%; height: 100%; }
+  .wipe-a { z-index: 1; clip-path: inset(0 calc(100% - var(--split)) 0 0); }
+  .wipe-line { position: absolute; z-index: 2; top: 0; bottom: 0; left: var(--split); width: 1.5px; margin-left: -0.75px; background: var(--ribbon); }
+  .wipe-label { position: absolute; z-index: 3; top: 8px; font-size: 13px; font-weight: 600; color: var(--ink); background: var(--ribbon); padding: 1px 8px; }
+  .wipe-label-a { left: 8px; }
+  .wipe-label-b { right: 8px; }
+  .wipe-range { position: absolute; z-index: 3; left: 0; right: 0; bottom: 0; width: 100%; margin: 0; opacity: 0; height: 24px; }
+  .wipe-range:focus-visible { opacity: 0.6; }
+  .keymap { display: grid; grid-template-columns: auto 1fr; gap: 6px 18px; align-items: center; margin: 4px 0 8px; }
+  .keymap .keys-of { display: flex; gap: 6px; flex-wrap: wrap; }
+  .key {
+    min-width: 3.2em; min-height: 32px; padding: 2px 10px; border: 1px solid var(--ash); border-radius: 3px;
+    background: none; color: var(--ribbon); font: 500 14px/1.6 var(--font); cursor: pointer;
+  }
+  .key:hover { border-color: var(--ribbon); }
+  .key.empty { color: var(--ash); border-style: dashed; }
+  .key.listening { background: var(--ribbon); color: var(--ink); border-color: var(--ribbon); }
+  kbd {
+    display: inline-block; min-width: 1.9em; padding: 0 6px; margin-right: 2px; text-align: center;
+    border: 1px solid var(--ash); border-radius: 3px; color: var(--ribbon); font: 500 13px/1.7 var(--font);
+  }
+
+  @media (max-width: 600px) {
+    .sheet section { padding: 24px 18px 26px; }
+    .sheet-head { padding: 12px 10px 12px 18px; }
+    .stage { min-height: auto; padding-top: 12vh; }
+    .screen-wrap::before { display: none; }
+    /* the first screen is taller than the picture there: it grows, the picture waits */
+    .screen-wrap:has(#setup-layer:not([hidden])) { aspect-ratio: auto; }
+    .screen-wrap:has(#setup-layer:not([hidden])) #screen { display: none; }
+    #setup-layer { position: relative; padding: 24px 0; }
+    #setup { max-height: none; padding: 0; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .sheet, .sheet.open { transition: none; }
+  }
+</style>
+</head>
+<body>
+<header class="top">
+  <div class="tools">
+    <button id="open-settings" class="icon" type="button" aria-label="Settings" title="Settings" aria-expanded="false" aria-controls="settings">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 6h18M3 12h18M3 18h18"/><circle cx="8" cy="6" r="2.2" fill="#000"/><circle cx="16" cy="12" r="2.2" fill="#000"/><circle cx="10" cy="18" r="2.2" fill="#000"/></svg>
+    </button>
+    <button id="fullscreen" class="icon" type="button" aria-label="Full screen" title="Full screen">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9V4h5M15 4h5v5M20 15v5h-5M9 20H4v-5"/></svg>
+    </button>
+  </div>
+</header>
+
+<main class="stage">
+  <div class="screen-wrap">
+    <div id="screen-box">
+      <canvas id="screen" width="512" height="288" tabindex="0" aria-label="The game"></canvas>
+
+      <div id="setup-layer" class="alert-layer">
+        <div id="setup" class="alert">
+          <h1 class="wordmark-big"><canvas id="game-logo" class="game-logo" role="img" aria-label="vib-ribbon" hidden></canvas></h1>
+          <p class="lede">The PlayStation game, rebuilt from its decompiled code. Put your own disc in: choose the disc image of <i>Vib-Ribbon</i> (PAL), its .cue file together with all of its .bin files.</p>
+          <div class="actions">
+            <label class="btn btn-file">Choose the disc image<input id="disc-files" type="file" multiple accept=".cue,.bin,.img"></label>
+            <button id="start" class="btn" type="button" disabled>Start the game</button>
+          </div>
+          <label class="check"><input id="remember" type="checkbox" checked> Keep it in this browser for next time</label>
+          <p id="status" class="status" role="status">The files stay on this computer. You can also drop them here.</p>
+          <button id="forget" class="link" type="button" hidden>Forget the kept disc</button>
+        </div>
+      </div>
+
+      <div id="music-layer" class="alert-layer dim" hidden>
+        <div class="alert" role="dialog" aria-labelledby="music-title">
+          <h2 id="music-title">Your music</h2>
+          <p>Choose the songs to play to. They become the tracks of a CD, in the order you choose them, and the game builds a course from each one as it plays.</p>
+          <div class="actions">
+            <label class="btn">Choose music files<input id="music-files" type="file" multiple accept="audio/*"></label>
+            <button id="music-back" class="link" type="button">Back</button>
+          </div>
+          <p id="music-status" class="status" role="status">MP3, FLAC, WAV, OGG or anything else your browser plays.</p>
+        </div>
+      </div>
+
+      <div id="vib-layer" class="alert-layer dim" hidden>
+        <div class="alert" role="dialog" aria-labelledby="vib-title">
+          <h2 id="vib-title">The game wants its own disc back</h2>
+          <p>Your music comes out of the drive and the Vib-Ribbon disc goes back in.</p>
+          <div class="actions">
+            <button id="vib-in" class="btn" type="button">Put the Vib-Ribbon disc in</button>
+            <button id="vib-back" class="link" type="button">Back</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</main>
+
+<div id="scrim" class="scrim" hidden></div>
+<aside id="settings" class="sheet" aria-labelledby="settings-title" aria-hidden="true">
+  <div class="sheet-head">
+    <div><h2 id="settings-title" style="display:inline">Settings</h2><span id="paused-note" class="paused" hidden>The game waits while this is open</span></div>
+    <button id="close-settings" class="icon" type="button" aria-label="Close the settings" title="Close (Esc)">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg>
+    </button>
+  </div>
+
+  <section>
+    <h3>Picture</h3>
+    <div class="choice" role="radiogroup" aria-label="Picture" data-setting="picture">
+      <button type="button" role="radio" data-value="high">Sharp</button>
+      <button type="button" role="radio" data-value="playstation">PlayStation</button>
+    </div>
+    <p>The game draws everything with straight lines. Sharp draws those lines again at your screen's full resolution, so they stay thin and smooth at any size. PlayStation shows the console's own 512 × 288 picture, enlarged, with its jagged edges.</p>
+    <div id="picture-example" class="example"></div>
+    <p class="note">The same moment of the first Bronze course, drawn both ways. Drag across it to move the divider.</p>
+  </section>
+
+  <section>
+    <h3>Music</h3>
+    <div class="choice" role="radiogroup" aria-label="Music" data-setting="music">
+      <button type="button" role="radio" data-value="cd">CD</button>
+      <button type="button" role="radio" data-value="playstation">PlayStation</button>
+    </div>
+    <p>On the console the songs did not come straight from the disc to the speakers. The game read them into the sound chip's memory and played them from there, in mono at 22 kHz. CD plays the disc's own stereo recording at 44.1 kHz instead, in time with the game.</p>
+    <div id="music-example" class="example"></div>
+  </section>
+
+  <section>
+    <h3>Sounds</h3>
+    <div class="choice" role="radiogroup" aria-label="Sounds" data-setting="sounds">
+      <button type="button" role="radio" data-value="bright">Bright</button>
+      <button type="button" role="radio" data-value="playstation">PlayStation</button>
+    </div>
+    <p>Vibri's voice and every sound effect are short samples that the sound chip plays at different pitches. Bright fills in between their samples in straight lines and keeps the high notes. PlayStation uses the chip's own smoothing filter: softer and duller, exactly as the console sounded.</p>
+    <div id="sounds-example" class="example"></div>
+  </section>
+
+  <section>
+    <h3>Controls</h3>
+    <p>In the menus, click what you want, turn the mouse wheel to move through them, and right-click to go back.</p>
+    <p>The keys stand in for the PlayStation's buttons. To change one, click it and press the new key; Delete clears it.</p>
+    <div id="keymap" class="keymap"></div>
+    <p class="note"><kbd>Esc</kbd> always goes back. <button id="keys-reset" class="link" type="button">Use the usual keys again</button></p>
+    <p class="note">Gamepads work too, with the PlayStation's layout.</p>
+  </section>
+
+  <section>
+    <h3>Discs</h3>
+    <p id="in-drive">The game has not started.</p>
+    <div class="actions">
+      <button id="game-disc" class="btn" type="button" disabled>Put the Vib-Ribbon disc in</button>
+      <label class="btn">Put your music in<input id="music-files-2" type="file" multiple accept="audio/*"></label>
+    </div>
+    <p class="note">To play to your own music, choose to play with your own CD in the game's menu: it asks for the music when it needs it. <button id="forget-2" class="link" type="button" hidden>Forget the disc kept in this browser</button></p>
+    <p class="note">The game's high scores and options stay in this browser for the next visit (on the PlayStation they were gone when it was switched off). <span id="record-note"></span> <button id="record-forget" class="link" type="button">Forget them</button></p>
+  </section>
+</aside>
+
+<script type="module" src="main.js"></script>
+</body>
+</html>

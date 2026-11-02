@@ -13,3 +13,7 @@ expected/
 /nonmatchings/
 __pycache__/
 .venv/
+
+# the port: its build, and a disc image linked in for testing
+port/web/build/
+port/web/disc

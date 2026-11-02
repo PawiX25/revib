@@ -20,7 +20,9 @@ INCLUDE_RODATA("asm/main_k/nonmatchings/KioskMain", D_80019508);
 #include "VideoSys.h"
 
 /* The allocator's handler is defined here. */
+#ifndef PORT /* (SGI STL's) */
 template void (*__malloc_alloc_template<0>::__malloc_alloc_oom_handler)();
+#endif
 
 /* the track the demo is played to, on a disc that has it */
 #define KIOSK_TRACK 7

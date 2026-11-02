@@ -238,6 +238,9 @@ static const OtherButtons s_otherButtons[4] = {
 };
 
 /* (Glue: extern const CourseInfo g_courses[NUM_COURSES];) */
+#ifdef PORT
+extern const CourseInfo g_courses[NUM_COURSES]; /* (a const has internal linkage in standard C++) */
+#endif
 const CourseInfo g_courses[NUM_COURSES] = {
     { 2, 0, 1, TRACKS_ALL, 0, -99.0, -99.0, -99, 1, { 6000, 4000, 2000 } },
     { 2, 0, 3, TRACKS_ALL, 0, -99.0, -99.0, -99, 1, { 6000, 4000, 2000 } },

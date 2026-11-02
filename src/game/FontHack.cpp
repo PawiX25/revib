@@ -41,6 +41,9 @@ void FontHack::AddSprite(u_long* ot, SPRT_8* sprite)
 
 FontHack::FontHack(FlushFunc fntFlush) : m_flush(fntFlush), m_original(0)
 {
+#ifdef PORT
+    return; /* (the port's FntFlush() draws nothing: no call in it to redirect) */
+#endif
     u_long* call = CallSite(fntFlush);
     u_long insn = *call;
 #line 106 "C:/psj/dev/locale/game/FontHack.cpp"
@@ -52,6 +55,9 @@ FontHack::FontHack(FlushFunc fntFlush) : m_flush(fntFlush), m_original(0)
 
 FontHack::~FontHack()
 {
+#ifdef PORT
+    return;
+#endif
     SetCallTarget(CallSite(m_flush), m_original);
 }
 

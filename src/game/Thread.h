@@ -24,6 +24,11 @@ public:
 protected:
     virtual long Run() = 0;
 
+#ifdef PORT
+public:
+    static void PortRun();
+#endif
+
 private:
     static long Entry();
     void Exit();

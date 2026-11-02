@@ -8,6 +8,85 @@
 
 #include "Thread.h"
 
+#ifdef PORT
+/*
+ * The port: the runtime's fibers (port/runtime/sys.cpp). Resume() switches
+ * to the thread at once, from the interrupt handler, and Return() back.
+ */
+extern "C" {
+int port_thread_open(void (*entry)(void));
+void port_thread_close(int handle);
+int port_thread_current(void);
+void port_thread_switch(int handle);
+}
+
+Thread* Thread::s_threads[MAX_THREADS];
+
+static void PortEntry()
+{
+    for (;;) {
+        Thread::PortRun();
+    }
+}
+
+Thread::Thread(u_long stack)
+{
+    for (int i = 0; i < MAX_THREADS; i++) {
+        if (s_threads[i] == NULL) {
+            s_threads[i] = this;
+            break;
+        }
+    }
+    m_handle = port_thread_open(PortEntry);
+    m_resumedFrom = 0;
+}
+
+Thread::~Thread()
+{
+    port_thread_close(m_handle);
+    for (int i = 0; i < MAX_THREADS; i++) {
+        if (s_threads[i] == this) {
+            s_threads[i] = NULL;
+        }
+    }
+}
+
+void Thread::Resume()
+{
+    if (m_handle == -1) {
+        return;
+    }
+    m_resumedFrom = port_thread_current();
+    port_thread_switch(m_handle);
+}
+
+void Thread::Return()
+{
+    port_thread_switch(m_resumedFrom);
+}
+
+/* the thread whose fiber this is: its Run() */
+void Thread::PortRun()
+{
+    int current = port_thread_current();
+    for (int i = 0; i < MAX_THREADS; i++) {
+        Thread* thread = s_threads[i];
+        if (thread != NULL && thread->m_handle == current) {
+            thread->Run();
+            thread->Exit();
+            return;
+        }
+    }
+}
+
+void Thread::Exit()
+{
+    m_handle = -1;
+    Return();
+}
+
+#else
+
 /* the kernel's tables: [1] the process (its current thread), [2] the threads */
 static struct ToT* s_kernelTables = (struct ToT*)0x100;
 /* s_threads has not been cleared yet */
@@ -114,3 +193,5 @@ void Thread::Exit()
     SwExitCriticalSection();
     Return();
 }
+
+#endif

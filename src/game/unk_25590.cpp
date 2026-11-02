@@ -104,7 +104,13 @@ int ModelMovie::Draw()
         MATRIX ls;
         GsGetLs(Coord::LibgsParent(&coord), &ls);
         GsSetLsMatrix(&ls);
+#ifdef PORT
+        port_object_begin(m_model, *(u_char*)object); /* (where it is drawn, for the mouse: TmdLineObj.h) */
+#endif
         m_model->m_objects[*(u_char*)object]->Draw(0, NULL);
+#ifdef PORT
+        port_object_end();
+#endif
         object = values;
         count++;
     }

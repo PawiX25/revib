@@ -119,6 +119,9 @@ void KeyRepeat::Init()
 
 int MenuCursor::Read(MenuInput* input, int wrapVertical, int wrapHorizontal, int active)
 {
+#ifdef PORT
+    port_menu_report(grid->rows, grid->columns, x, y, active, (wrapVertical ? 1 : 0) | (wrapHorizontal ? 2 : 0));
+#endif
     input->confirm = 0;
     input->back = 0;
     if (!active) {
@@ -203,6 +206,9 @@ int MenuCursor::Read(MenuInput* input, int wrapVertical, int wrapHorizontal, int
 
 int ReadConfirm()
 {
+#ifdef PORT
+    port_menu_report(0, 0, 0, 0, 1, 0); /* (a screen with no menu, only confirm and cancel) */
+#endif
     Pad* pad = InputSys::GetPad("Play");
     Buttons pressed = pad->m_fourWay.pressed;
     if (!(pressed & LanguageSelect::ConfirmButton())) {

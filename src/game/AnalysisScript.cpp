@@ -32,7 +32,9 @@ string ToString(u_long value);
  * instantiate vector<string>'s __destroy_aux() here as well; the game's
  * compiler did not, so it is declared extern.
  */
+#ifndef PORT /* (SGI STL's) */
 extern template void __destroy_aux(string*, string*, __false_type);
+#endif
 
 /*
  * The script's debug menu: makes the road parts from its settings while

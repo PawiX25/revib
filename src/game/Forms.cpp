@@ -391,7 +391,11 @@ bool StringForm::Equals(const Form& other) const
 void StringForm::Print(Port& port) const
 {
     port.Put('"');
+#ifdef PORT /* (the standard library's string iterators are not pointers) */
+    for (const char* p = m_text.data(); p < m_text.data() + m_text.size(); p++) {
+#else
     for (const char* p = m_text.begin(); p < m_text.end(); p++) {
+#endif
         char c = *p;
         if (c == '"' || c == '\\') {
             port.Put('\\');
@@ -622,7 +626,11 @@ static void SkipSpace(Port& port)
 
 void Port::PutString(string text)
 {
+#ifdef PORT
+    for (const char* p = text.data(); p < text.data() + text.size(); p++) {
+#else
     for (const char* p = text.begin(); p < text.end(); p++) {
+#endif
         Put(*p);
     }
 }
@@ -953,7 +961,11 @@ void HostPort::Open(int read, int write)
 #line 930 "C:/psj/dev/locale/game/Forms.cpp"
     assert(!m_open);
 #line 956 "src/game/Forms.cpp"
+#ifdef PORT
+    m_fd = PCopen((char*)m_name.c_str(), OpenMode(read, write), 0);
+#else
     m_fd = PCopen(m_name.begin(), OpenMode(read, write), 0);
+#endif
 #line 932 "C:/psj/dev/locale/game/Forms.cpp"
     assert(m_fd >= 0);
 #line 960 "src/game/Forms.cpp"
@@ -969,7 +981,11 @@ void HostPort::Create()
 #line 942 "C:/psj/dev/locale/game/Forms.cpp"
     assert(!m_open);
 #line 972 "src/game/Forms.cpp"
+#ifdef PORT
+    m_fd = PCcreat((char*)m_name.c_str(), 0);
+#else
     m_fd = PCcreat(m_name.begin(), 0);
+#endif
 #line 944 "C:/psj/dev/locale/game/Forms.cpp"
     assert(m_fd >= 0);
 #line 976 "src/game/Forms.cpp"
@@ -1208,7 +1224,11 @@ void StringPort::Skip()
 /* (without moving on) */
 int StringPort::GetInt()
 {
+#ifdef PORT
+    return *(int*)(m_text.data() + m_position);
+#else
     return *(int*)(m_text.begin() + m_position);
+#endif
 }
 
 string StringPort::GetString(int length)

@@ -11,13 +11,18 @@
 #include "InputSys.h"
 #include "VideoSys.h"
 #include "Gameplay.h"
+#ifdef PORT
+#include "Menu.h"
+#endif
 
 /*
  * The ChoiceParameter destructor (emitted in Parameter.cpp) makes this egcs
  * instantiate vector<string>'s __destroy_aux() here as well; the game's
  * compiler did not, so it is declared extern.
  */
+#ifndef PORT /* (SGI STL's) */
 extern template void __destroy_aux(string*, string*, __false_type);
+#endif
 
 /* the "Info: status" and "Analog: Left" strings of a shared header, then "track = ..." of another */
 INCLUDE_RODATA("asm/main_g/nonmatchings/Title", D_8001D20C);
@@ -167,6 +172,9 @@ void Title::Update()
     /* the screens shake more and more as they fade */
     int jitter = s_fadeFrame * (200 * ONE);
     int still = s_fadeFrame == 0;
+#ifdef PORT
+    port_menu_screen = s_screen; /* (the menus' report, Menu.h) */
+#endif
     switch (s_screen) {
     case SCREEN_NONE:
     case SCREEN_DONE:

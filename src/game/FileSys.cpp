@@ -20,10 +20,20 @@
  */
 extern "C" char __builtin_archive_x2[];
 
+#ifdef PORT
+/* the port: read from the executable on the disc (port/src/boot.cpp) */
+extern "C" void* port_builtin_archive(void);
+
+static inline PackedFiles* BuiltinArchive()
+{
+    return (PackedFiles*)port_builtin_archive();
+}
+#else
 static inline PackedFiles* BuiltinArchive()
 {
     return (PackedFiles*)(((u_long)__builtin_archive_x2 >> 1) | 0x80000000);
 }
+#endif
 
 bool FileSys::s_failIfMissing = false;
 

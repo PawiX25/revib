@@ -1,0 +1,43 @@
+# The browser port, built and put on GitHub Pages on every push to the port branch.
+name: Pages
+
+on:
+  push:
+    branches: [port]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Emscripten
+        run: |
+          git clone --depth 1 https://github.com/emscripten-core/emsdk.git ~/emsdk
+          ~/emsdk/emsdk install 6.0.13
+          ~/emsdk/emsdk activate 6.0.13
+      - name: Build
+        run: |
+          source ~/emsdk/emsdk_env.sh
+          make -f port/Makefile -j"$(nproc)"
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: port/web
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4

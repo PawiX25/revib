@@ -117,6 +117,20 @@ public:
 };
 
 TmdModel* LoadTmdModel(const char* name);
+
+#ifdef PORT
+/*
+ * The port's mouse in the menus: where each object of a model is drawn
+ * (port/runtime/sys.cpp gathers the screen points of the object being drawn
+ * and tells the page). The models are known by their file's name.
+ */
+extern "C" {
+void port_model_name(const void* model, const char* name);
+void port_object_begin(const void* model, int object);
+void port_object_points(const DVECTOR* screen, const u_short* depth, int count);
+void port_object_end(void);
+}
+#endif
 TmdLineObj* LoadTmdLineObj(const char* name);
 
 #endif

@@ -204,6 +204,9 @@ void LanguageSelect::PlaySounds()
 void LanguageSelect::UpdateLanguageMenu()
 {
     if (!s_busy && !s_chosen) {
+#ifdef PORT
+        port_menu_screen = 100 + MENU_LANGUAGE;
+#endif
         s_languageCursor.Read(&s_input, 0, 0, 1);
         PlaySounds();
         s_select[MENU_LANGUAGE]->m_position = Fixed::Int(s_languageCursor.Item());
@@ -217,6 +220,9 @@ void LanguageSelect::UpdateLanguageMenu()
 void LanguageSelect::UpdateModeMenu()
 {
     if (!s_busy && !s_chosen) {
+#ifdef PORT
+        port_menu_screen = 100 + MENU_MODE;
+#endif
         s_modeCursor.Read(&s_input, 0, 0, 1);
         PlaySounds();
         s_select[MENU_MODE]->m_position = Fixed::Int(s_modeCursor.Index());

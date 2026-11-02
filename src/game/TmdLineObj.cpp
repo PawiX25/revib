@@ -235,6 +235,9 @@ void TmdLineObj::DrawPass(GsOT_TAG* tags, int shift, int zOffset, SVECTOR* join)
         ClipLine(&work[m_lines[lastLine].v0], &work[m_lines[lastLine].v1]);
     }
     RotTransPersN(m_work, m_screen, m_depth, m_interpolation, m_flags, count);
+#ifdef PORT
+    port_object_points(m_screen, m_depth, count);
+#endif
 
     CVECTOR color = m_color;
     int useColor = m_useColor;
@@ -284,7 +287,13 @@ inline TmdModel::TmdModel(const MemPtr<u_long>& file) : m_file(file)
 
 TmdModel* LoadTmdModel(const char* name)
 {
+#ifdef PORT
+    TmdModel* model = new TmdModel(MemPtr<u_long>(name));
+    port_model_name(model, name);
+    return model;
+#else
     return new TmdModel(MemPtr<u_long>(name));
+#endif
 }
 
 #ifdef GAME
